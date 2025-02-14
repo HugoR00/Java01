@@ -1,14 +1,12 @@
 import classes.User;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner (System.in);
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("mm");
         User usuario = new User();
 
 
@@ -33,7 +31,8 @@ public class Main {
 
                     while (true){
                         if (escolha == 'S'){
-                            LocalTime hora = LocalTime.now();
+                            Instant horaInicio = Instant.now();
+
                             System.out.println("Bem vindo ao sistema de suporte, como podemos ajudar?(digite sair caso queira sair)");
                             String resposta = sc.nextLine();
                             if (resposta.equalsIgnoreCase("sair")){
@@ -42,24 +41,23 @@ public class Main {
                             System.out.println("Seu pedido de ajuda foi registrado, deseja finalizar o chamado ou páusa-lo? (finalizar/pausar)");
                             String finalizacao = sc.nextLine();
                             while (true){
-                                if (finalizacao.equalsIgnoreCase("finalizar")){
-                                    LocalTime horaFinal = LocalTime.now();
-                                    LocalTime total = horaFinal.minusMinutes(hora.getMinute());
-                                    String decorrido = dtf.format(total);
-                                    System.out.println("Olá, " + usuario.getNome() + ", seu chamado levou " + decorrido + " minutos" );
-                                    break;
-                                }else if (finalizacao.equalsIgnoreCase("pausar")) {
+                                if (finalizacao.equalsIgnoreCase("pausar")) {
                                     System.out.println("O seu chamado será pausado!");
-                                    LocalTime horaPausada = LocalTime.now();
+                                    Instant horaPause = Instant.now();
                                     System.out.println("Caso deseje despausar, digite 'despausar'!");
                                     String despause = sc.nextLine();
-                                    LocalTime horaDespausada = null;
                                     if (despause.equalsIgnoreCase("despausar")) {
                                         System.out.println("Seu chamado será despausado!");
-                                        horaDespausada = LocalTime.now();
+                                        Instant horaDespause = Instant.now();
+                                        Duration tempoPause = Duration.between(horaPause,horaDespause);
+                                        System.out.println(tempoPause.toMinutes());
                                         break;
                                     }
-                                    LocalTime tempoPause = horaDespausada.minusMinutes(horaPausada.getMinute());
+                                }else if (finalizacao.equalsIgnoreCase("finalizar")){
+                                    Instant horaFinal = Instant.now();
+                                    Duration tempoChamado = Duration.between(horaInicio,horaFinal);
+                                    System.out.println("Olá, " + usuario.getNome() + ", seu chamado levou " + tempoChamado + " minuto(s)" );
+                                    break;
                                 }
 
                             }
